@@ -1,0 +1,32 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+.env
+.env.*
+
+# IDE and editor configs
+.vscode/
+.idea/
+*.swp
+
+# OS and system files
+.DS_Store
+Thumbs.db
+
+# Frontend (if included by mistake)
+frontend/
+
+# Runtime upload directories (do not version control)
+uploaded_contracts/
+test_summaries/
+
+# Build logs and temporary files
+*.log
+render-build.log
+
+# Pytest cache
+.pytest_cache/
