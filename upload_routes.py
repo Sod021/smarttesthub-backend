@@ -3,14 +3,15 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from remote_docker_api import (
     trigger_docker_test,
-    fetch_from_remote_container,
-    upload_to_remote_container
+    upload_to_remote_container_memory,
+    fetch_from_remote_container
+    
 )
 
 router = APIRouter()
 
 ALLOWED_EVM_EXTENSIONS = {".sol", ".txt"}
-ALLOWED_NON_EVM_EXTENSIONS = {".wasm"}
+ALLOWED_NON_EVM_EXTENSIONS = {".rs", ".wasm"}
 
 
 def validate_extension(filename: str, allowed_extensions: set):
@@ -34,27 +35,21 @@ async def save_uploaded_file(file: UploadFile, subfolder: str) -> str:
 async def upload_evm_contract(contract_file: UploadFile = File(...)):
     validate_extension(contract_file.filename, ALLOWED_EVM_EXTENSIONS)
 
-    # Save locally
-    saved_path = await save_uploaded_file(contract_file, "evm")
+    # Read the file into memory
+    contents = await contract_file.read()
 
-    # Upload to remote Docker container
-    upload_to_remote_container(saved_path, "evm")
+    # Upload to remote Docker container directly
+    upload_to_remote_container_memory(contents, contract_file.filename, "evm")
 
-    # Run the contract test remotely
+    # Trigger the Docker test
     logs = trigger_docker_test(contract_file.filename, "evm")
 
-    # Fetch summary report
+    # Fetch reports
     summary_filename = f"test-summary-{contract_file.filename.replace('.sol', '')}.md"
     summary_content = fetch_from_remote_container(summary_filename, "evm")
-
-    # Fetch aggregated report
     aggregated_content = fetch_from_remote_container("complete-contracts-report.md", "evm")
 
-    # Optional: Read local contents
-    with open(saved_path, "rb") as f:
-        file_contents = f.read()
-
-    result = process_evm_contract(file_contents, contract_file.filename)
+    result = process_evm_contract(contents, contract_file.filename)
     return JSONResponse(content={
         "message": "EVM contract processed",
         "filename": contract_file.filename,
@@ -64,33 +59,20 @@ async def upload_evm_contract(contract_file: UploadFile = File(...)):
         "details": result
     })
 
-
-# Upload Non-EVM
+# Non-EVM Route (same structure)
 @router.post("/upload-non-evm")
 async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
     validate_extension(contract_file.filename, ALLOWED_NON_EVM_EXTENSIONS)
 
-    # Save locally
-    saved_path = await save_uploaded_file(contract_file, "non-evm")
+    contents = await contract_file.read()
+    upload_to_remote_container_memory(contents, contract_file.filename, "non-evm")
 
-    # Upload to remote Docker container
-    upload_to_remote_container(saved_path, "non-evm")
-
-    # Run the contract test remotely
     logs = trigger_docker_test(contract_file.filename, "non-evm")
-
-    # Fetch summary report
     summary_filename = f"test-summary-{contract_file.filename.replace('.wasm', '')}.md"
     summary_content = fetch_from_remote_container(summary_filename, "non-evm")
-
-    # Fetch aggregated report
     aggregated_content = fetch_from_remote_container("complete-contracts-report.md", "non-evm")
 
-    # Optional: Read local contents
-    with open(saved_path, "rb") as f:
-        file_contents = f.read()
-
-    result = process_non_evm_contract(file_contents, contract_file.filename)
+    result = process_non_evm_contract(contents, contract_file.filename)
     return JSONResponse(content={
         "message": "Non-EVM contract processed",
         "filename": contract_file.filename,
@@ -101,10 +83,24 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
     })
 
 
-# Dummy processors (to be replaced with actual logic later)
+@router.get("/results/{filename}")
+async def get_test_results(filename: str):
+    summary_filename = f"test-summary-{filename.replace('.sol', '').replace('.wasm', '')}.md"
+    aggregated_filename = "complete-contracts-report.md"
+
+    summary = fetch_from_remote_container(summary_filename, "evm")
+    aggregated = fetch_from_remote_container(aggregated_filename, "evm")
+
+    return JSONResponse(content={
+        "filename": filename,
+        "summary": summary,
+        "aggregated_report": aggregated
+    })
+
+
+# Dummy processors
 def process_evm_contract(file_contents: bytes, filename: str) -> dict:
     return {"contract_type": "evm", "filename": filename, "status": "processed"}
-
 
 def process_non_evm_contract(file_contents: bytes, filename: str) -> dict:
     return {"contract_type": "non-evm", "filename": filename, "status": "processed"}
