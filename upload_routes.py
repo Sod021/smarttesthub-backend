@@ -45,8 +45,8 @@ async def upload_evm_contract(contract_file: UploadFile = File(...)):
     logs = trigger_docker_test(contract_file.filename, "evm")
 
     # Fetch reports
-    summary_filename = f"test-summary-{contract_file.filename.replace('.sol', '')}.md"
-    summary_content = fetch_from_remote_container(summary_filename, "evm")
+    #summary_filename = f"test-summary-{contract_file.filename.replace('.sol', '')}.md"
+    #summary_content = fetch_from_remote_container(summary_filename, "evm")
     aggregated_content = fetch_from_remote_container("complete-contracts-report.md", "evm")
 
     result = process_evm_contract(contents, contract_file.filename)
@@ -54,7 +54,7 @@ async def upload_evm_contract(contract_file: UploadFile = File(...)):
         "message": "EVM contract processed",
         "filename": contract_file.filename,
         "docker_logs": logs,
-        "test_summary": summary_content,
+       # "test_summary": summary_content,
         "aggregated_report": aggregated_content,
         "details": result
     })
@@ -68,8 +68,8 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
     upload_to_remote_container_memory(contents, contract_file.filename, "non-evm")
 
     logs = trigger_docker_test(contract_file.filename, "non-evm")
-    summary_filename = f"test-summary-{contract_file.filename.replace('.wasm', '')}.md"
-    summary_content = fetch_from_remote_container(summary_filename, "non-evm")
+    #summary_filename = f"test-summary-{contract_file.filename.replace('.wasm', '')}.md"
+    #summary_content = fetch_from_remote_container(summary_filename, "non-evm")
     aggregated_content = fetch_from_remote_container("complete-contracts-report.md", "non-evm")
 
     result = process_non_evm_contract(contents, contract_file.filename)
@@ -77,7 +77,7 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
         "message": "Non-EVM contract processed",
         "filename": contract_file.filename,
         "docker_logs": logs,
-        "test_summary": summary_content,
+       # "test_summary": summary_content,
         "aggregated_report": aggregated_content,
         "details": result
     })
@@ -85,15 +85,15 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
 
 @router.get("/results/{filename}")
 async def get_test_results(filename: str):
-    summary_filename = f"test-summary-{filename.replace('.sol', '').replace('.wasm', '')}.md"
+    #summary_filename = f"test-summary-{filename.replace('.sol', '').replace('.wasm', '')}.md"
     aggregated_filename = "complete-contracts-report.md"
 
-    summary = fetch_from_remote_container(summary_filename, "evm")
+    #summary = fetch_from_remote_container(summary_filename, "evm")
     aggregated = fetch_from_remote_container(aggregated_filename, "evm")
 
     return JSONResponse(content={
         "filename": filename,
-        "summary": summary,
+       # "summary": summary,
         "aggregated_report": aggregated
     })
 
