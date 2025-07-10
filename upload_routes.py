@@ -44,20 +44,23 @@ async def upload_evm_contract(contract_file: UploadFile = File(...)):
     # Trigger the Docker test
     logs = trigger_docker_test(contract_file.filename, "evm")
 
-    # Fetch reports
-    #summary_filename = f"test-summary-{contract_file.filename.replace('.sol', '')}.md"
-    #summary_content = fetch_from_remote_container(summary_filename, "evm")
-    aggregated_content = fetch_from_remote_container("complete-contracts-report.md", "evm")
+    # Dynamically generate report filename
+    base_name = contract_file.filename.rsplit(".", 1)[0]
+    report_filename = f"{base_name}-report.md"
+
+    # Fetch the specific report
+    aggregated_content = fetch_from_remote_container(report_filename, "evm")
 
     result = process_evm_contract(contents, contract_file.filename)
+
     return JSONResponse(content={
         "message": "EVM contract processed",
         "filename": contract_file.filename,
         "docker_logs": logs,
-       # "test_summary": summary_content,
         "aggregated_report": aggregated_content,
         "details": result
     })
+
 
 # Non-EVM Route (same structure)
 @router.post("/upload-non-evm")
@@ -68,19 +71,24 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
     upload_to_remote_container_memory(contents, contract_file.filename, "non-evm")
 
     logs = trigger_docker_test(contract_file.filename, "non-evm")
-    #summary_filename = f"test-summary-{contract_file.filename.replace('.wasm', '')}.md"
-    #summary_content = fetch_from_remote_container(summary_filename, "non-evm")
-    aggregated_content = fetch_from_remote_container("complete-contracts-report.md", "non-evm")
+
+    # Dynamically generate report filename
+    base_name = contract_file.filename.rsplit(".", 1)[0]
+    report_filename = f"{base_name}-report.md"
+
+    # Fetch the specific report
+    aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
 
     result = process_non_evm_contract(contents, contract_file.filename)
+
     return JSONResponse(content={
         "message": "Non-EVM contract processed",
         "filename": contract_file.filename,
         "docker_logs": logs,
-       # "test_summary": summary_content,
         "aggregated_report": aggregated_content,
         "details": result
     })
+
 
 
 @router.get("/results/{filename}")
