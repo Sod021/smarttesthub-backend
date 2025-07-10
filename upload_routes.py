@@ -85,29 +85,30 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
 
 @router.get("/results/{filename}")
 async def get_test_results(filename: str):
-    #summary_filename = f"test-summary-{filename.replace('.sol', '').replace('.wasm', '')}.md"
-    aggregated_filename = "complete-contracts-report.md"
+    # strip extension and build the specific report name
+    base = filename.rsplit('.', 1)[0]           # e.g. "Crowdfunding"
+    report_filename = f"{base}-report.md"        # e.g. "Crowdfunding-report.md"
 
-    #summary = fetch_from_remote_container(summary_filename, "evm")
-    aggregated = fetch_from_remote_container(aggregated_filename, "evm")
+    # fetch only that contract's report
+    aggregated = fetch_from_remote_container(report_filename, "evm")
 
-    return JSONResponse(content={
+    return JSONResponse({
         "filename": filename,
-       # "summary": summary,
         "aggregated_report": aggregated
     })
+
 
 
 @router.get("/results/non-evm/{filename}")
 async def get_non_evm_test_results(filename: str):
-    aggregated_filename = "complete-contracts-report.md"
-
-    aggregated = fetch_from_remote_container(aggregated_filename, "non-evm")
-
-    return JSONResponse(content={
+    base = filename.rsplit('.', 1)[0]
+    report_filename = f"{base}-report.md"
+    aggregated = fetch_from_remote_container(report_filename, "non-evm")
+    return JSONResponse({
         "filename": filename,
         "aggregated_report": aggregated
     })
+
 
 
 # Dummy processors
