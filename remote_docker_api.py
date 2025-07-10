@@ -43,36 +43,40 @@ def trigger_docker_test(filename: str, contract_type: str) -> str:
 
 
 # Fetch result file from remote container (with polling)
-def fetch_from_remote_container(filename: str, contract_type: str, timeout: int = 60) -> str:
-    if contract_type == "non-evm":
-        url = "https://dockerapi.smarttesthub.live/containers/non-evm-container/archive?path=/app/logs/reports/complete-contracts-report.md"
-    else:
-        url = "https://dockerapi.smarttesthub.live/containers/evm-container/archive?path=/app/logs/reports/complete-contracts-report.md"
+def fetch_from_remote_container(report_filename: str, contract_type: str, timeout: int = 60) -> str:
+    """
+    report_filename: e.g. 'Crowdfunding-report.md'
+    contract_type: 'evm' or 'non-evm'
+    """
+    # pick the correct container
+    container = "evm-container" if contract_type == "evm" else "non-evm-container"
 
+    # now fetch the contract-specific report
+    url = (
+        f"https://dockerapi.smarttesthub.live"
+        f"/containers/{container}/archive"
+        f"?path=/app/logs/reports/{report_filename}"
+    )
     print(f"🔍 Fetching TAR from: {url}")
 
     for second in range(timeout):
-        response = requests.get(url)
-        
-        if response.status_code == 200:
-            print(f"📦 TAR file received. Extracting '{filename}'...")
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            print(f"📦 TAR file received. Extracting '{report_filename}'…")
             try:
-                tar_data = io.BytesIO(response.content)
-                with tarfile.open(fileobj=tar_data) as tar:
-                    for member in tar.getmembers():
-                        if member.name.endswith(filename):
-                            extracted = tar.extractfile(member)
-                            if extracted:
-                                content = extracted.read().decode("utf-8")
-                                return content
+                tar_stream = io.BytesIO(resp.content)
+                with tarfile.open(fileobj=tar_stream, mode="r:*") as tar:
+                    member = next((m for m in tar.getmembers() if m.name.endswith(report_filename)), None)
+                    if member:
+                        content = tar.extractfile(member).read().decode()
+                        return content
+                    return f"❌ {report_filename} not found inside tar."
             except Exception as e:
-                return f"❌ Error extracting TAR: {str(e)}"
-
-        elif response.status_code == 404:
-            print(f"⌛ Waiting for file ({second + 1}/{timeout})...")
+                return f"❌ Error extracting TAR: {e}"
+        elif resp.status_code == 404:
+            print(f"⌛ Waiting for file ({second+1}/{timeout})…")
         else:
-            return f"❌ Unexpected response: {response.status_code} - {response.text}"
-
+            return f"❌ Unexpected {resp.status_code}: {resp.text}"
         time.sleep(1)
 
-    return f"❌ File '{filename}' not available after waiting {timeout} seconds."
+    return f"❌ File '{report_filename}' not available after {timeout}s."
