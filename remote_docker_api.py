@@ -48,10 +48,10 @@ def fetch_from_remote_container(filename: str, contract_type: str, timeout: int 
     if contract_type == "non-evm":
         container_name = "non-evm-container"  # only if they are split
 
-    #path = f"/app/logs/reports/{filename}"
-    #url = f"{DOCKER_API_URL}/containers/{container_name}/archive?path={path}"
-    url = "https://dockerapi.smarttesthub.live/containers/evm-container/archive?path=/app/logs/reports/complete-contracts-report.md"
-    url = "https://dockerapi.smarttesthub.live/containers/non-evm-container/archive?path=/app/logs/reports/complete-contracts-report.md"
+    path = f"/app/logs/reports/{filename}"
+    url = f"{DOCKER_API_URL}/containers/{container_name}/archive?path={path}"
+   # url = "https://dockerapi.smarttesthub.live/containers/evm-container/archive?path=/app/logs/reports/complete-contracts-report.md"
+    
 
     print(f"🔍 Fetching TAR from: {url}")
 
