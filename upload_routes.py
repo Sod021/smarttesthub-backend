@@ -98,6 +98,18 @@ async def get_test_results(filename: str):
     })
 
 
+@router.get("/results/non-evm/{filename}")
+async def get_non_evm_test_results(filename: str):
+    aggregated_filename = "complete-contracts-report.md"
+
+    aggregated = fetch_from_remote_container(aggregated_filename, "non-evm")
+
+    return JSONResponse(content={
+        "filename": filename,
+        "aggregated_report": aggregated
+    })
+
+
 # Dummy processors
 def process_evm_contract(file_contents: bytes, filename: str) -> dict:
     return {"contract_type": "evm", "filename": filename, "status": "processed"}
