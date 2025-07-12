@@ -1,11 +1,11 @@
 import os
+from pathlib import Path
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from remote_docker_api import (
     trigger_docker_test,
     upload_to_remote_container_memory,
     fetch_from_remote_container
-    
 )
 
 router = APIRouter()
@@ -44,8 +44,8 @@ async def upload_evm_contract(contract_file: UploadFile = File(...)):
     # Trigger the Docker test
     logs = trigger_docker_test(contract_file.filename, "evm")
 
-    # Dynamically generate report filename
-    base_name = contract_file.filename.rsplit(".", 1)[0]
+    # Dynamically generate report filename from contract name
+    base_name = Path(contract_file.filename).stem.strip().lower()
     report_filename = f"{base_name}-report.md"
 
     # Fetch the specific report
@@ -62,7 +62,7 @@ async def upload_evm_contract(contract_file: UploadFile = File(...)):
     })
 
 
-# Non-EVM Route (same structure)
+# Upload Non-EVM
 @router.post("/upload-non-evm")
 async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
     validate_extension(contract_file.filename, ALLOWED_NON_EVM_EXTENSIONS)
@@ -72,11 +72,9 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
 
     logs = trigger_docker_test(contract_file.filename, "non-evm")
 
-    # Dynamically generate report filename
-    base_name = contract_file.filename.rsplit(".", 1)[0]
+    base_name = Path(contract_file.filename).stem.strip().lower()
     report_filename = f"{base_name}-report.md"
 
-    # Fetch the specific report
     aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
 
     result = process_non_evm_contract(contents, contract_file.filename)
@@ -90,27 +88,25 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
     })
 
 
-
+# Results for EVM
 @router.get("/results/{filename}")
 async def get_test_results(filename: str):
-    # strip extension and build the specific report name
-    base = filename.rsplit('.', 1)[0]           # e.g. "Crowdfunding"
-    report_filename = f"{base}-report.md"        # e.g. "Crowdfunding-report.md"
+    base = Path(filename).stem.strip().lower()
+    report_filename = f"{base}-report.md"
 
-    # fetch only that contract's report
     aggregated = fetch_from_remote_container(report_filename, "evm")
-
     return JSONResponse({
         "filename": filename,
         "aggregated_report": aggregated
     })
 
 
-
+# Results for Non-EVM
 @router.get("/results/non-evm/{filename}")
 async def get_non_evm_test_results(filename: str):
-    base = filename.rsplit('.', 1)[0]
+    base = Path(filename).stem.strip().lower()
     report_filename = f"{base}-report.md"
+
     aggregated = fetch_from_remote_container(report_filename, "non-evm")
     return JSONResponse({
         "filename": filename,
@@ -118,10 +114,10 @@ async def get_non_evm_test_results(filename: str):
     })
 
 
-
 # Dummy processors
 def process_evm_contract(file_contents: bytes, filename: str) -> dict:
     return {"contract_type": "evm", "filename": filename, "status": "processed"}
+
 
 def process_non_evm_contract(file_contents: bytes, filename: str) -> dict:
     return {"contract_type": "non-evm", "filename": filename, "status": "processed"}
