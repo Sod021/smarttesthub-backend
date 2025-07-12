@@ -93,12 +93,12 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
 async def get_test_results(filename: str):
     base = Path(filename).stem.strip().lower()
     report_filename = f"{base}-report.md"
-
     aggregated = fetch_from_remote_container(report_filename, "evm")
-    return JSONResponse({
-        "filename": filename,
-        "aggregated_report": aggregated
-    })
+    
+    return JSONResponse(
+        content={"filename": filename, "aggregated_report": aggregated},
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+    )
 
 
 # Results for Non-EVM
@@ -106,12 +106,12 @@ async def get_test_results(filename: str):
 async def get_non_evm_test_results(filename: str):
     base = Path(filename).stem.strip().lower()
     report_filename = f"{base}-report.md"
-
     aggregated = fetch_from_remote_container(report_filename, "non-evm")
-    return JSONResponse({
-        "filename": filename,
-        "aggregated_report": aggregated
-    })
+    
+    return JSONResponse(
+        content={"filename": filename, "aggregated_report": aggregated},
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+    )
 
 
 # Dummy processors
