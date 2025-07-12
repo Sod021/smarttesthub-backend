@@ -47,7 +47,7 @@ def trigger_docker_test(filename: str, contract_type: str) -> str:
     return f"✅ Test triggered:\n{response.text}"
 
 
-def fetch_from_remote_container(report_filename: str, contract_type: str, timeout: int = 160) -> str:
+def fetch_from_remote_container(report_filename: str, contract_type: str, timeout: int = 60) -> str:
     """
     Polls the Docker container for a specific contract report file.
     Extracts and returns the .md report from the tarball when it's ready.
@@ -60,6 +60,7 @@ def fetch_from_remote_container(report_filename: str, contract_type: str, timeou
     )
 
     print(f"🔍 Polling for /logs/reports/{report_filename} in {container}…")
+    print(f"🌐 Full Docker API polling URL: {url}")
 
     for second in range(timeout):
         resp = requests.get(url)
