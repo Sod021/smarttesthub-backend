@@ -35,20 +35,14 @@ async def save_uploaded_file(file: UploadFile, subfolder: str) -> str:
 async def upload_evm_contract(contract_file: UploadFile = File(...)):
     validate_extension(contract_file.filename, ALLOWED_EVM_EXTENSIONS)
 
-    # Read the file into memory
     contents = await contract_file.read()
-
-    # Upload to remote Docker container directly
     upload_to_remote_container_memory(contents, contract_file.filename, "evm")
 
-    # Trigger the Docker test
     logs = trigger_docker_test(contract_file.filename, "evm")
 
-    # Dynamically generate report filename from contract name
-    base_name = Path(contract_file.filename).stem.strip().lower()
+    base_name = Path(contract_file.filename).stem.strip()
     report_filename = f"{base_name}-report.md"
 
-    # Fetch the specific report
     aggregated_content = fetch_from_remote_container(report_filename, "evm")
 
     result = process_evm_contract(contents, contract_file.filename)
@@ -72,7 +66,7 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
 
     logs = trigger_docker_test(contract_file.filename, "non-evm")
 
-    base_name = Path(contract_file.filename).stem.strip().lower()
+    base_name = Path(contract_file.filename).stem.strip()
     report_filename = f"{base_name}-report.md"
 
     aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
@@ -91,26 +85,26 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
 # Results for EVM
 @router.get("/results/{filename}")
 async def get_test_results(filename: str):
-    base = Path(filename).stem.strip().lower()
+    base = Path(filename).stem.strip()
     report_filename = f"{base}-report.md"
     aggregated = fetch_from_remote_container(report_filename, "evm")
-    
+
     return JSONResponse(
         content={"filename": filename, "aggregated_report": aggregated},
-        #headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
     )
 
 
 # Results for Non-EVM
 @router.get("/results/non-evm/{filename}")
 async def get_non_evm_test_results(filename: str):
-    base = Path(filename).stem.strip().lower()
+    base = Path(filename).stem.strip()
     report_filename = f"{base}-report.md"
     aggregated = fetch_from_remote_container(report_filename, "non-evm")
-    
+
     return JSONResponse(
         content={"filename": filename, "aggregated_report": aggregated},
-        #headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
     )
 
 
