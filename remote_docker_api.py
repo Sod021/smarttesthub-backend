@@ -8,29 +8,34 @@ import time
 DOCKER_API_URL = "https://dockerapi.smarttesthub.live/containers/evm-container/archive?path=/app/input"
 HEADERS = {"Content-Type": "application/x-tar"}
 
-# ✅ Create .tar from in-memory file and PUT to Docker API
+
 def upload_to_remote_container_memory(file_bytes: bytes, filename: str, contract_type: str):
+    """
+    Uploads a contract file as a .tar archive to the Docker container's /app/input directory.
+    """
     tar_stream = io.BytesIO()
 
-    # Create in-memory .tar
+    # Create in-memory .tar file
     with tarfile.open(fileobj=tar_stream, mode="w") as tar:
         tarinfo = tarfile.TarInfo(name=filename)
         tarinfo.size = len(file_bytes)
         tar.addfile(tarinfo, io.BytesIO(file_bytes))
-    
+
     tar_stream.seek(0)
 
-    # PUT to Docker API directly
+    # PUT to Docker API
     response = requests.put(DOCKER_API_URL, headers=HEADERS, data=tar_stream)
 
     if response.status_code != 200:
         raise Exception(f"Upload to Docker failed: {response.status_code} - {response.text}")
-    
+
     return {"status": "success", "message": "File uploaded and extracted to container"}
 
 
-# Trigger a remote test execution
 def trigger_docker_test(filename: str, contract_type: str) -> str:
+    """
+    Sends a request to the Docker container to begin testing the uploaded contract.
+    """
     url = f"{DOCKER_API_URL}/trigger-test"
     data = {
         "filename": filename,
@@ -42,22 +47,19 @@ def trigger_docker_test(filename: str, contract_type: str) -> str:
     return f"✅ Test triggered:\n{response.text}"
 
 
-# Fetch result file from remote container (with polling)
 def fetch_from_remote_container(report_filename: str, contract_type: str, timeout: int = 160) -> str:
     """
-    report_filename: e.g. 'Crowdfunding-report.md'
-    contract_type: 'evm' or 'non-evm'
+    Polls the Docker container for a specific contract report file.
+    Extracts and returns the .md report from the tarball when it's ready.
     """
-    # pick the correct container
     container = "evm-container" if contract_type == "evm" else "non-evm-container"
-
-    # now fetch the contract-specific report
     url = (
         f"https://dockerapi.smarttesthub.live"
         f"/containers/{container}/archive"
         f"?path=/app/logs/reports/{report_filename}"
     )
-    print(f"🔍 Fetching TAR from: {url}")
+
+    print(f"🔍 Polling for /logs/reports/{report_filename} in {container}…")
 
     for second in range(timeout):
         resp = requests.get(url)
@@ -68,15 +70,20 @@ def fetch_from_remote_container(report_filename: str, contract_type: str, timeou
                 with tarfile.open(fileobj=tar_stream, mode="r:*") as tar:
                     member = next((m for m in tar.getmembers() if m.name.endswith(report_filename)), None)
                     if member:
-                        content = tar.extractfile(member).read().decode()
-                        return content
-                    return f"❌ {report_filename} not found inside tar."
+                        extracted = tar.extractfile(member)
+                        if extracted:
+                            return extracted.read().decode()
+                        else:
+                            return f"❌ Could not extract '{report_filename}' from tar."
+                    return f"❌ '{report_filename}' not found inside TAR."
             except Exception as e:
                 return f"❌ Error extracting TAR: {e}"
+
         elif resp.status_code == 404:
-            print(f"⌛ Waiting for file ({second+1}/{timeout})…")
+            print(f"⌛ Waiting for file ({second + 1}/{timeout})…")
         else:
-            return f"❌ Unexpected {resp.status_code}: {resp.text}"
+            return f"❌ Unexpected response {resp.status_code}: {resp.text}"
+
         time.sleep(1)
 
     return f"❌ File '{report_filename}' not available after {timeout}s."
