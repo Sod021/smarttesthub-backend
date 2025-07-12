@@ -119,9 +119,9 @@ async def get_non_evm_test_results(filename: str):
 
 
 
-# # Dummy processors
-# def process_evm_contract(file_contents: bytes, filename: str) -> dict:
-#     return {"contract_type": "evm", "filename": filename, "status": "processed"}
+# Dummy processors
+def process_evm_contract(file_contents: bytes, filename: str) -> dict:
+    return {"contract_type": "evm", "filename": filename, "status": "processed"}
 
-# def process_non_evm_contract(file_contents: bytes, filename: str) -> dict:
-#     return {"contract_type": "non-evm", "filename": filename, "status": "processed"}
+def process_non_evm_contract(file_contents: bytes, filename: str) -> dict:
+    return {"contract_type": "non-evm", "filename": filename, "status": "processed"}
