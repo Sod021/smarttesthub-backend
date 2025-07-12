@@ -43,7 +43,7 @@ def trigger_docker_test(filename: str, contract_type: str) -> str:
 
 
 # Fetch result file from remote container (with polling)
-def fetch_from_remote_container(report_filename: str, contract_type: str, timeout: int = 60) -> str:
+def fetch_from_remote_container(report_filename: str, contract_type: str, timeout: int = 160) -> str:
     """
     report_filename: e.g. 'Crowdfunding-report.md'
     contract_type: 'evm' or 'non-evm'
