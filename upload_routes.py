@@ -97,7 +97,7 @@ async def get_test_results(filename: str):
     
     return JSONResponse(
         content={"filename": filename, "aggregated_report": aggregated},
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+        #headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
     )
 
 
@@ -110,7 +110,7 @@ async def get_non_evm_test_results(filename: str):
     
     return JSONResponse(
         content={"filename": filename, "aggregated_report": aggregated},
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+        #headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
     )
 
 
