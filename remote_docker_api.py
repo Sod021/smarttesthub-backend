@@ -52,6 +52,9 @@ def fetch_from_remote_container(report_filename: str, contract_type: str, timeou
     Polls the Docker container for a specific contract report file.
     Extracts and returns the .md report from the tarball when it's ready.
     """
+    
+    print(f"🧭 Looking for report in container type: {contract_type}")
+
     container = "evm-container" if contract_type == "evm" else "non-evm-container"
     url = (
         f"https://dockerapi.smarttesthub.live"
