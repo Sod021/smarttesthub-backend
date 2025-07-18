@@ -20,15 +20,6 @@ def validate_extension(filename: str, allowed_extensions: set):
         raise HTTPException(status_code=400, detail=f"File type {ext} not allowed.")
 
 
-async def save_uploaded_file(file: UploadFile, subfolder: str) -> str:
-    upload_dir = os.path.join("uploaded_contracts", subfolder)
-    os.makedirs(upload_dir, exist_ok=True)
-    file_path = os.path.join(upload_dir, file.filename)
-    with open(file_path, "wb") as buffer:
-        contents = await file.read()
-        buffer.write(contents)
-    return file_path
-
 
 # Upload EVM
 @router.post("/upload-evm")
@@ -100,17 +91,17 @@ async def upload_algorand_contract(contract_file: UploadFile = File(...)):
 
     base_name = Path(contract_file.filename).stem.strip()
     report_filename = f"{base_name}-report.md"
-    
+
     aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
 
-    result = process_algorand_contract(contents, contract_file.filename)
+    #result = process_algorand_contract(contents, contract_file.filename)
 
     return JSONResponse(content={
         "message": "Algorand contract processed",
         "filename": contract_file.filename,
         "docker_logs": logs,
         "aggregated_report": aggregated_content,
-        "details": result
+        #"details": result
     })
 
 
@@ -128,14 +119,14 @@ async def upload_starknet_contract(contract_file: UploadFile = File(...)):
 
     aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
 
-    result = process_starknet_contract(contents, contract_file.filename)
+   # result = process_starknet_contract(contents, contract_file.filename)
 
     return JSONResponse(content={
         "message": "Starknet contract processed",
         "filename": contract_file.filename,
         "docker_logs": logs,
         "aggregated_report": aggregated_content,
-        "details": result
+        #"details": result
     })
 
 
