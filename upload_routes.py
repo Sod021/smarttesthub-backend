@@ -33,7 +33,7 @@ async def upload_evm_contract(contract_file: UploadFile = File(...)):
     upload_to_remote_container_memory(contents, contract_file.filename, "evm")
 
     # Trigger the Docker test
-    logs = trigger_docker_test(contract_file.filename, "evm")
+    #logs = trigger_docker_test(contract_file.filename, "evm")
 
     # Dynamically generate report filename from contract name
     base_name = Path(contract_file.filename).stem.strip()
@@ -47,7 +47,7 @@ async def upload_evm_contract(contract_file: UploadFile = File(...)):
     return JSONResponse(content={
         "message": "EVM contract processed",
         "filename": contract_file.filename,
-        "docker_logs": logs,
+      #  "docker_logs": logs,
         "aggregated_report": aggregated_content,
         "details": result
     })
@@ -61,7 +61,7 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
     contents = await contract_file.read()
     upload_to_remote_container_memory(contents, contract_file.filename, "non-evm")
 
-    logs = trigger_docker_test(contract_file.filename, "non-evm")
+   # logs = trigger_docker_test(contract_file.filename, "non-evm")
 
     base_name = Path(contract_file.filename).stem.strip()
     report_filename = f"{base_name}-report.md"
@@ -73,7 +73,7 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
     return JSONResponse(content={
         "message": "Non-EVM contract processed",
         "filename": contract_file.filename,
-        "docker_logs": logs,
+     #   "docker_logs": logs,
         "aggregated_report": aggregated_content,
         "details": result
     })
@@ -87,7 +87,7 @@ async def upload_algorand_contract(contract_file: UploadFile = File(...)):
     contents = await contract_file.read()
     upload_to_remote_container_memory(contents, contract_file.filename, "non-evm")
 
-    logs = trigger_docker_test(contract_file.filename, "non-evm")
+   # logs = trigger_docker_test(contract_file.filename, "non-evm")
 
     base_name = Path(contract_file.filename).stem.strip()
     report_filename = f"{base_name}-report.md"
@@ -99,7 +99,7 @@ async def upload_algorand_contract(contract_file: UploadFile = File(...)):
     return JSONResponse(content={
         "message": "Algorand contract processed",
         "filename": contract_file.filename,
-        "docker_logs": logs,
+     #   "docker_logs": logs,
         "aggregated_report": aggregated_content,
         #"details": result
     })
@@ -112,7 +112,7 @@ async def upload_starknet_contract(contract_file: UploadFile = File(...)):
     contents = await contract_file.read()
     upload_to_remote_container_memory(contents, contract_file.filename, "non-evm")
 
-    logs = trigger_docker_test(contract_file.filename, "non-evm")
+   # logs = trigger_docker_test(contract_file.filename, "non-evm")
 
     base_name = Path(contract_file.filename).stem.strip()
     report_filename = f"{base_name}-report.md"
@@ -124,7 +124,7 @@ async def upload_starknet_contract(contract_file: UploadFile = File(...)):
     return JSONResponse(content={
         "message": "Starknet contract processed",
         "filename": contract_file.filename,
-        "docker_logs": logs,
+     #   "docker_logs": logs,
         "aggregated_report": aggregated_content,
         #"details": result
     })

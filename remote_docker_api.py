@@ -32,19 +32,19 @@ def upload_to_remote_container_memory(file_bytes: bytes, filename: str, contract
     return {"status": "success", "message": "File uploaded and extracted to container"}
 
 
-def trigger_docker_test(filename: str, contract_type: str) -> str:
-    """
-    Sends a request to the Docker container to begin testing the uploaded contract.
-    """
-    url = f"{DOCKER_API_URL}/trigger-test"
-    data = {
-        "filename": filename,
-        "contract_type": contract_type
-    }
-    response = requests.post(url, json=data)
-    if response.status_code != 200:
-        return f"❌ Remote execution failed: {response.status_code} - {response.text}"
-    return f"✅ Test triggered:\n{response.text}"
+# def trigger_docker_test(filename: str, contract_type: str) -> str:
+#     """
+#     Sends a request to the Docker container to begin testing the uploaded contract.
+#     """
+#     url = f"{DOCKER_API_URL}/trigger-test"
+#     data = {
+#         "filename": filename,
+#         "contract_type": contract_type
+#     }
+#     response = requests.post(url, json=data)
+#     if response.status_code != 200:
+#         return f"❌ Remote execution failed: {response.status_code} - {response.text}"
+#     return f"✅ Test triggered:\n{response.text}"
 
 
 def fetch_from_remote_container(report_filename: str, contract_type: str, timeout: int = 300) -> str:
