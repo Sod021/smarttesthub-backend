@@ -5,7 +5,7 @@ import os
 import time
 
 # Docker API expects archive at this endpoint
-DOCKER_API_URL = "https://dockerapi.smarttesthub.live/containers/evm-container/archive?path=/app/input"
+DOCKER_API_URL = "https://dockerapi1.smarttesthub.live/containers/evm-container/archive?path=/app/input"
 HEADERS = {"Content-Type": "application/x-tar"}
 
 
