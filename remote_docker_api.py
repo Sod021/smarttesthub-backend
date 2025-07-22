@@ -66,7 +66,7 @@ def fetch_from_remote_container(report_filename: str, contract_type: str, timeou
         return f"❌ Unknown contract type '{contract_type}'"
 
     url = (
-        f"https://dockerapi.smarttesthub.live"
+        f"https://dockerapi1.smarttesthub.live"
         f"/containers/{container}/archive"
         f"?path=/app/logs/reports/{report_filename}"
     )
