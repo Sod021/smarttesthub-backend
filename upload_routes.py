@@ -134,7 +134,7 @@ async def upload_starknet_contract(contract_file: UploadFile = File(...)):
 # Results for EVM
 # @router.get("/results/{filename}")
 # async def get_test_results(filename: str):
-#     base = Path(filename).stem.strip().lower()
+#     base = Path(filename).stem.strip()
 #     report_filename = f"{base}-report.md"
     
 #     aggregated = fetch_from_remote_container(report_filename, "evm")
