@@ -37,7 +37,7 @@ async def upload_evm_contract(contract_file: UploadFile = File(...)):
 
     # Dynamically generate report filename from contract name
     base_name = Path(contract_file.filename).stem.strip()
-    report_filename = f"{base_name}-report.md"
+    report_filename = f"{base_name}-report.txt"
 
     # Fetch the specific report
     aggregated_content = fetch_from_remote_container(report_filename, "evm")
