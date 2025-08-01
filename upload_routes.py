@@ -64,7 +64,7 @@ async def upload_non_evm_contract(contract_file: UploadFile = File(...)):
    # logs = trigger_docker_test(contract_file.filename, "non-evm")
 
     base_name = Path(contract_file.filename).stem.strip()
-    report_filename = f"{base_name}-report.md"
+    report_filename = f"{base_name}-report.txt"
 
     aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
 
@@ -90,7 +90,7 @@ async def upload_algorand_contract(contract_file: UploadFile = File(...)):
    # logs = trigger_docker_test(contract_file.filename, "non-evm")
 
     base_name = Path(contract_file.filename).stem.strip()
-    report_filename = f"{base_name}-report.md"
+    report_filename = f"{base_name}-report.txt"
 
     aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
 
@@ -115,7 +115,7 @@ async def upload_starknet_contract(contract_file: UploadFile = File(...)):
    # logs = trigger_docker_test(contract_file.filename, "non-evm")
 
     base_name = Path(contract_file.filename).stem.strip()
-    report_filename = f"{base_name}-report.md"
+    report_filename = f"{base_name}-report.txt"
 
     aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
 
@@ -135,7 +135,7 @@ async def upload_starknet_contract(contract_file: UploadFile = File(...)):
 @router.get("/results/{filename}")
 async def get_test_results(filename: str):
     base = Path(filename).stem.strip()
-    report_filename = f"{base}-report.md"
+    report_filename = f"{base}-report.txt"
     
     aggregated = fetch_from_remote_container(report_filename, "evm")
     
@@ -149,7 +149,7 @@ async def get_test_results(filename: str):
 @router.get("/results/non-evm/{filename}")
 async def get_non_evm_test_results(filename: str):
     base = Path(filename).stem.strip()
-    report_filename = f"{base}-report.md"
+    report_filename = f"{base}-report.txt"
 
     aggregated = fetch_from_remote_container(report_filename, "non-evm")
     
@@ -162,7 +162,7 @@ async def get_non_evm_test_results(filename: str):
 # @router.get("/results/non-evm-algorand/{filename}")
 async def get_algorand_test_results(filename: str):
     base = Path(filename).stem.strip()
-    report_filename = f"{base}-report.md"
+    report_filename = f"{base}-report.txt"
 
     aggregated = fetch_from_remote_container(report_filename, "non-evm-algorand")
 
@@ -175,7 +175,7 @@ async def get_algorand_test_results(filename: str):
 # @router.get("/results/non-evm-starknet/{filename}")
 async def get_starknet_test_results(filename: str):
     base = Path(filename).stem.strip()
-    report_filename = f"{base}-report.md"
+    report_filename = f"{base}-report.txt"
 
     aggregated = fetch_from_remote_container(report_filename, "non-evm-starknet")
 
