@@ -132,57 +132,57 @@ async def upload_starknet_contract(contract_file: UploadFile = File(...)):
 
 
 # Results for EVM
-@router.get("/results/{filename}")
-async def get_test_results(filename: str):
-    base = Path(filename).stem.strip()
-    report_filename = f"{base}-report.txt"
+# @router.get("/results/{filename}")
+# async def get_test_results(filename: str):
+#     base = Path(filename).stem.strip()
+#     report_filename = f"{base}-report.txt"
     
-    aggregated = fetch_from_remote_container(report_filename, "evm")
+#     aggregated = fetch_from_remote_container(report_filename, "evm")
     
-    return JSONResponse(
-        content={"filename": filename, "aggregated_report": aggregated},
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
-    )
+#     return JSONResponse(
+#         content={"filename": filename, "aggregated_report": aggregated},
+#         headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+#     )
 
 
 # Results for Non-EVM
-@router.get("/results/non-evm/{filename}")
-async def get_non_evm_test_results(filename: str):
-    base = Path(filename).stem.strip()
-    report_filename = f"{base}-report.txt"
+# @router.get("/results/non-evm/{filename}")
+# async def get_non_evm_test_results(filename: str):
+#     base = Path(filename).stem.strip()
+#     report_filename = f"{base}-report.txt"
 
-    aggregated = fetch_from_remote_container(report_filename, "non-evm")
+#     aggregated = fetch_from_remote_container(report_filename, "non-evm")
     
-    return JSONResponse(
-        content={"filename": filename, "aggregated_report": aggregated},
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
-    )
+#     return JSONResponse(
+#         content={"filename": filename, "aggregated_report": aggregated},
+#         headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+#     )
 
 
 # @router.get("/results/non-evm-algorand/{filename}")
-async def get_algorand_test_results(filename: str):
-    base = Path(filename).stem.strip()
-    report_filename = f"{base}-report.txt"
+# async def get_algorand_test_results(filename: str):
+#     base = Path(filename).stem.strip()
+#     report_filename = f"{base}-report.txt"
 
-    aggregated = fetch_from_remote_container(report_filename, "non-evm-algorand")
+#     aggregated = fetch_from_remote_container(report_filename, "non-evm-algorand")
 
-    return JSONResponse(
-        content={"filename": filename, "aggregated_report": aggregated},
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
-    )
+#     return JSONResponse(
+#         content={"filename": filename, "aggregated_report": aggregated},
+#         headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+#     )
 
 
 # @router.get("/results/non-evm-starknet/{filename}")
-async def get_starknet_test_results(filename: str):
-    base = Path(filename).stem.strip()
-    report_filename = f"{base}-report.txt"
+# async def get_starknet_test_results(filename: str):
+#     base = Path(filename).stem.strip()
+#     report_filename = f"{base}-report.txt"
 
-    aggregated = fetch_from_remote_container(report_filename, "non-evm-starknet")
+#     aggregated = fetch_from_remote_container(report_filename, "non-evm-starknet")
 
-    return JSONResponse(
-        content={"filename": filename, "aggregated_report": aggregated},
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
-    )
+#     return JSONResponse(
+#         content={"filename": filename, "aggregated_report": aggregated},
+#         headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+#     )
 
 
 
