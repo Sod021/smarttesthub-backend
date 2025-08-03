@@ -9,7 +9,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:8080",
-        "https://smart-test-hub.vercel.app",
+        "https://smarttest-hub.vercel.app",
         "https://smarttesthub-backend.onrender.com"
     ],
     allow_credentials=True,
