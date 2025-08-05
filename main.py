@@ -10,7 +10,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:8080",
         "https://smarttest-hub.vercel.app",
-        "https://smarttesthub-backend.onrender.com"
+        "https://smarttesthub-backend.onrender.com",
         "https://smarttesthub-frontend.vercel.app"
     ],
     allow_credentials=True,
