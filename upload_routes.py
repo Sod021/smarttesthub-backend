@@ -85,14 +85,14 @@ async def upload_algorand_contract(contract_file: UploadFile = File(...)):
     validate_extension(contract_file.filename, ALLOWED_NON_EVM_EXTENSIONS)
 
     contents = await contract_file.read()
-    upload_to_remote_container_memory(contents, contract_file.filename, "non-evm")
+    upload_to_remote_container_memory(contents, contract_file.filename, "non-evm-algorand")
 
    # logs = trigger_docker_test(contract_file.filename, "non-evm")
 
     base_name = Path(contract_file.filename).stem.strip()
     report_filename = f"{base_name}-report.txt"
 
-    aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
+    aggregated_content = fetch_from_remote_container(report_filename, "non-evm-algorand")
 
     #result = process_algorand_contract(contents, contract_file.filename)
 
@@ -110,14 +110,14 @@ async def upload_starknet_contract(contract_file: UploadFile = File(...)):
     validate_extension(contract_file.filename, ALLOWED_NON_EVM_EXTENSIONS)
 
     contents = await contract_file.read()
-    upload_to_remote_container_memory(contents, contract_file.filename, "non-evm")
+    upload_to_remote_container_memory(contents, contract_file.filename, "non-evm-starknet")
 
    # logs = trigger_docker_test(contract_file.filename, "non-evm")
 
     base_name = Path(contract_file.filename).stem.strip()
     report_filename = f"{base_name}-report.txt"
 
-    aggregated_content = fetch_from_remote_container(report_filename, "non-evm")
+    aggregated_content = fetch_from_remote_container(report_filename, "non-evm-starknet")
 
    # result = process_starknet_contract(contents, contract_file.filename)
 
