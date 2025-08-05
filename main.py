@@ -11,6 +11,7 @@ app.add_middleware(
         "http://localhost:8080",
         "https://smarttest-hub.vercel.app",
         "https://smarttesthub-backend.onrender.com"
+        "https://smarttesthub-frontend.vercel.app/"
     ],
     allow_credentials=True,
     allow_methods=["*"],
